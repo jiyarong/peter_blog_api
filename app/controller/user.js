@@ -15,14 +15,26 @@ class UserController extends Controller {
 		}
 	}
 
-	async login () {
+	//POST /api/users/login
+	async login() {
 		const { body } = this.ctx.request
 		const user = await this.ctx.model.User.login(body.name, body.password)
-		console.log(user)
 		if (user != null) {
 			return this.success(await this.loginSuccess(user))
 		} else {
 			this.error("密码错误!")
+		}
+	}
+
+	//POST /api/users/update_info
+	async update_info() {
+		const { body } = this.ctx.request
+		const user = await this.currentUser()
+		if (user == undefined) {
+			this.render_405()
+		} else {
+			const result = await user.update(body)
+			this.success(result)
 		}
 	}
 }

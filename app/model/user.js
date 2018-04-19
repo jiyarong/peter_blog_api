@@ -15,7 +15,8 @@ module.exports = app => {
 		},
 		created_at: DATE,
 		updated_at: DATE,
-		encrypted_password: STRING
+		encrypted_password: STRING,
+		avatar_url: STRING
 	})
 
 	User.Enum = {
@@ -31,7 +32,8 @@ module.exports = app => {
 				name: name,
 				encrypted_password: md5(password),
 				active: User.Enum.Active.active
-			}
+			},
+			attributes: ['name', 'avatar_url', 'id']
 		})
 
 		return user

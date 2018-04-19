@@ -12,11 +12,17 @@ class ApplicationController extends Controller {
 		}
 	}
 
-	error(err) {
+	error(err, code=201) {
+		this.ctx.status = code
 		this.ctx.body = {
 			success: false,
 			err: err
 		}
+	}
+
+	//用户认证失败
+	render_405 () {
+		this.error('认证失败', 405)
 	}
 
 	async currentUser() {
@@ -32,7 +38,9 @@ class ApplicationController extends Controller {
 		});
 
 		if (session) {
-			const user = await session.getUser()
+			const user = await session.getUser({
+				attributes: ['id', 'name', 'avatar_url']
+			})
 			return user
 		} else {
 			return undefined
@@ -47,7 +55,8 @@ class ApplicationController extends Controller {
 		})
 		return {
 			token: session.token,
-			name: user.name
+			name: user.name,
+			avatar_url: user.avatar_url
 		}
 	}
 }

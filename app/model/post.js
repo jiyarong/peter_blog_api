@@ -11,7 +11,16 @@ module.exports = app => {
 	})
 
 	Post.associate = function () {
-		app.model.Post.belongsTo(app.model.User)
+		app.model.Post.belongsTo(app.model.User, { as: 'user' });
+		app.model.Post.belongsTo(app.model.Category, { as: 'category' });
+		app.model.Post.hasMany(app.model.Comment, {
+			foreignKey: 'commentable_id',
+			constraints: false,
+			scope: {
+				commentable: 'post'
+			},
+			as: 'comments'
+		})
 	}
 
 	return Post;
