@@ -11,6 +11,13 @@ module.exports = app => {
 
   Comment.associate = function () {
     app.model.Comment.belongsTo(app.model.User, { as: 'creator', foreignKey: 'created_by' })
+    app.model.Comment.hasMany(app.model.Comment, {
+      as: 'comments',
+      scope: {
+        commentable: 'comment',
+        foreignKey: 'commentable_id'
+      }
+    })
   }
 
   return Comment;

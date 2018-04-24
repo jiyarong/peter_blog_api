@@ -3,9 +3,6 @@
 const Controller = require('./application');
 
 class CommentController extends Controller {
-  // async index () {
-    
-  // }
 
   //POST /api/comments
   async create () {

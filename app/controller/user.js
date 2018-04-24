@@ -3,6 +3,28 @@
 const Controller = require('./application');
 
 class UserController extends Controller {
+	//GET /api/users
+	async index() {
+		const params = this.ctx.query
+		if (params.page == undefined) params.page = 1;
+		if (params.per_page == undefined) params.per_page = 20
+		const users = await this.ctx.model.User.findAndCount({
+			attributes: ['id', 'name', 'avatar_url', 'active', 'role', 'created_at'],
+			order: [['created_at', 'desc']],
+			limit: params.per_page,
+			offset: params.per_page * (params.page - 1),
+		})
+		this.success(users)
+	}
+
+	//PUT /api/users/:id
+	async update() {
+		const { model, params, request } = this.ctx
+		let user = await model.User.findById(params.id)
+		const result = await user.update(request.body)
+		this.success(result)
+	}
+
 	// POST /api/users/register
 	async register() {
 		const { body } = this.ctx.request
@@ -27,15 +49,11 @@ class UserController extends Controller {
 	}
 
 	//POST /api/users/update_info
-	async update_info() {
+	async update_avatar() {
 		const { body } = this.ctx.request
-		const user = await this.currentUser()
-		if (user == undefined) {
-			this.render_405()
-		} else {
-			const result = await user.update(body)
-			this.success(result)
-		}
+		const user = await this.ctx.currentUser
+		const result = await user.update({ avatar_url: body.avatar_url })
+		this.success(result)
 	}
 }
 

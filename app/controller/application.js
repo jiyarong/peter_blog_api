@@ -39,7 +39,7 @@ class ApplicationController extends Controller {
 
 		if (session) {
 			const user = await session.getUser({
-				attributes: ['id', 'name', 'avatar_url']
+				attributes: ['id', 'name', 'avatar_url', 'role']
 			})
 			return user
 		} else {
@@ -56,7 +56,8 @@ class ApplicationController extends Controller {
 		return {
 			token: session.token,
 			name: user.name,
-			avatar_url: user.avatar_url
+			avatar_url: user.avatar_url,
+			role: user.role
 		}
 	}
 }

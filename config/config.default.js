@@ -7,7 +7,9 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1522122724144_7125';
 
   // add your config here
-  config.middleware = [];
+  config.middleware = [
+    'currentUser'  
+  ];
 
   config.sequelize = {
     dialect: 'mysql', // support: mysql, mariadb, postgres, mssql
@@ -35,7 +37,7 @@ module.exports = appInfo => {
       enable: false,
     },
 
-    domainWhiteList: [ 'http://localhost:3000', 'http://admin.jikabao.dev1:3001' ],
+    domainWhiteList: [ 'http://localhost:3000', 'http://admin.jikabao.dev1:3001', 'http://blog.peterji.cn' ],
 
     csrf: {
       enable: false,

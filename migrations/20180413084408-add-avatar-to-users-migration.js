@@ -8,7 +8,7 @@ module.exports = {
 
     queryInterface.addColumn('users', 'role', {
       type: Sequelize.STRING,
-      defaultValue: 1
+      defaultValue: '游客',
     });
 
     queryInterface.addColumn('users', 'active', {

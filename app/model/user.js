@@ -16,7 +16,8 @@ module.exports = app => {
 		created_at: DATE,
 		updated_at: DATE,
 		encrypted_password: STRING,
-		avatar_url: STRING
+		avatar_url: STRING,
+		role: STRING
 	})
 
 	User.Enum = {
@@ -33,7 +34,7 @@ module.exports = app => {
 				encrypted_password: md5(password),
 				active: User.Enum.Active.active
 			},
-			attributes: ['name', 'avatar_url', 'id']
+			attributes: ['name', 'avatar_url', 'id', 'role']
 		})
 
 		return user
@@ -58,6 +59,12 @@ module.exports = app => {
 			success: true,
 			user: result
 		}
+	}
+
+	User.associate = function () {
+		app.model.User.hasMany(app.model.Post, {
+			as: 'posts'
+		})
 	}
 
 	return User
