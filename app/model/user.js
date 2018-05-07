@@ -1,4 +1,5 @@
 var md5 = require("md5")
+var moment = require("moment")
 
 module.exports = app => {
 	const { STRING, INTEGER, DATE } = app.Sequelize;
@@ -10,6 +11,15 @@ module.exports = app => {
 				isUnique: async function (name) {
 					u = await User.find({where:{name: name}});
 					if (u) { return Promise.reject('该用户已存在!') }
+				} 
+			}
+		},
+		email: {
+			type: STRING,
+			validate: {
+				isUnique: async function (email) {
+					e = await User.find({where:{email: email}});
+					if (e) { return Promise.reject('该邮箱已被使用!') }
 				} 
 			}
 		},
@@ -42,11 +52,34 @@ module.exports = app => {
 	
 	//用户注册
 	User.prototype.register = async function (body) {
-		const { name, password, password_confirm } = body
+		const { name, password, password_confirm, email, validate_code } = body
+		const { gt } = app.Sequelize.Op;
+		const mailValidate = await app.model.UserMailValidation.findOne({
+			where: {
+				email: email,
+				validate_code: validate_code,
+				created_at: {
+					[gt]: moment().subtract(15, 'minute').format()
+				}
+			}
+		})
+
+		if (mailValidate == undefined) {
+			return {
+				success: false,
+				errors: '验证码已过期'
+			}
+		}
+
 		this.name = name
 		this.encrypted_password = md5(password)
+		this.email = email
 		try {
-			result = await this.save()
+			const result = await this.save()
+			return {
+				success: true,
+				user: result
+			}
 		} catch(err) {
 			if (err.name === "SequelizeValidationError")
 			return {
@@ -55,10 +88,7 @@ module.exports = app => {
 			}
 		}
 		
-		return {
-			success: true,
-			user: result
-		}
+	
 	}
 
 	User.associate = function () {

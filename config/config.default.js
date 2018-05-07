@@ -1,4 +1,6 @@
 'use strict';
+const database = require('./database')
+const mail = require('./mail')
 
 module.exports = appInfo => {
   const config = exports = {};
@@ -11,16 +13,9 @@ module.exports = appInfo => {
     'currentUser'  
   ];
 
-  config.sequelize = {
-    dialect: 'mysql', // support: mysql, mariadb, postgres, mssql
-    database: 'peter_blog_api',
-    host: 'localhost',
-    port: '3306',
-    username: 'root',
-    password: 'ad66544970123',
-  };
+  config.sequelize = database
+  config.email = mail
 
-  
   config.bodyParser = {
     jsonLimit: '5mb',
     formLimit: '6mb',
@@ -37,7 +32,12 @@ module.exports = appInfo => {
       enable: false,
     },
 
-    domainWhiteList: [ 'http://localhost:3000', 'http://admin.jikabao.dev1:3001', 'http://blog.peterji.cn' ],
+    domainWhiteList: [ 
+      'http://localhost:3000', 
+      'http://admin.jikabao.dev1:3001', 
+      'http://blog.peterji.cn',
+      'http://www.peterji.cn'
+    ],
 
     csrf: {
       enable: false,

@@ -25,11 +25,24 @@ class UserController extends Controller {
 		this.success(result)
 	}
 
+	//GET /api/user/get_validate_code
+	async get_validate_code() {
+		const { query, model } = this.ctx
+		if (query.email == undefined) {
+			return this.error("邮箱地址为空")
+		}
+
+		await model.UserMailValidation.generate_code(query.email)
+		this.success()
+
+	}
+
 	// POST /api/users/register
 	async register() {
 		const { body } = this.ctx.request
 		var user = this.ctx.model.User.build()
 		const result = await user.register(body)
+		console.log('result', result)
 		if (result.success === true) {
 			this.success(await this.loginSuccess(result.user))
 		} else {

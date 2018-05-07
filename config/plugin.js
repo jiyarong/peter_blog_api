@@ -10,5 +10,9 @@ exports.cors = {
     package: 'egg-cors',
 };
 
+exports.email = {
+    enable: true,
+    package: 'egg-mail',
+};
 
 exports.static = true;

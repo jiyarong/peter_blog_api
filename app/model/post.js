@@ -6,8 +6,16 @@ module.exports = app => {
 		content: 'TEXT',
 		created_at: DATE,
 		updated_at: DATE,
-		user_id: INTEGER
-
+		deleted_at: DATE,
+		user_id: INTEGER,
+	}, {
+		scopes: {
+			not_deleted: {
+				where: {
+					deleted_at: null
+				}
+			}
+		}
 	})
 
 	Post.associate = function () {

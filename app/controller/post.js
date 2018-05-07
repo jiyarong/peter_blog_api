@@ -5,6 +5,7 @@ const Controller = require('./application');
 class PostController extends Controller {
 	//GET /api/posts
 	async index() {
+		console.log('app.config.env', this.ctx.app.config.env)
 		const params = this.ctx.query
 		if (params.page == undefined) params.page = 1;
 		if (params.per_page == undefined) params.per_page = 20
@@ -17,13 +18,14 @@ class PostController extends Controller {
 			}
 		}
 
-		const posts = await this.ctx.model.Post.findAndCount({
+		const posts = await this.ctx.model.Post.scope('not_deleted').findAndCount({
+			scope: 'not_deleted',
 			attributes: ['id', 'user_id', 'title', 'updated_at'],
 			order: [['updated_at', 'desc']],
 			limit: parseInt(params.per_page),
 			offset: params.per_page * (params.page - 1),
 			include: [
-				{ model: this.ctx.model.User, as: 'user', attributes: ['name', 'avatar_url'] },
+				{ model: this.ctx.model.User, as: 'user', attributes: ['name', 'avatar_url', 'id'] },
 				{ model: this.ctx.model.Category, as: 'category', attributes: ['name'] }
 			],
 			where: {
@@ -36,9 +38,9 @@ class PostController extends Controller {
 	//GET /api/posts/:id
 	async show() {
 		let include = [
-			{ 
-				model: this.ctx.model.User, 
-				as: 'user', 
+			{
+				model: this.ctx.model.User,
+				as: 'user',
 				attributes: ['avatar_url', 'name', 'id']
 			}
 		]
@@ -48,9 +50,9 @@ class PostController extends Controller {
 			as: 'comments',
 			attributes: ['created_at', 'content', 'created_by', 'id'],
 			include: [
-				{ 
-					model: this.ctx.model.User, 
-					as: 'creator', 
+				{
+					model: this.ctx.model.User,
+					as: 'creator',
 					attributes: ['avatar_url', 'name', 'id']
 				}
 			]
@@ -63,7 +65,7 @@ class PostController extends Controller {
 			order.push([this.ctx.model.Comment, 'created_at', 'asc'])
 		}
 
-		const post = await this.ctx.model.Post.findById(this.ctx.params.id, { 
+		const post = await this.ctx.model.Post.scope('not_deleted').findById(this.ctx.params.id, {
 			order: order,
 			include: include
 		})
@@ -83,14 +85,28 @@ class PostController extends Controller {
 	async update() {
 		const { model, currentUser, params, request } = this.ctx
 		let post = await model.Post.findById(params.id)
-		if (post == undefined) {return this.error('未找到该文章')}
+		if (post == undefined) { return this.error('未找到该文章') }
 		if (post.created_by == currentUser.id || currentUser.role == '管理员') {
-			console.log('request', params)
 			const result = await post.update(request.body)
 			return this.success(result)
 		} else {
 			return this.error('你没有权限更改该条文章!')
 		}
+	}
+
+	//DELETE /api/posts/:id
+	async destroy() {
+		console.log('it works')
+		const { params, currentUser, model } = this.ctx
+		let post = await model.Post.findById(params.id)
+		if (post == undefined) { return this.error('未找到该文章') }
+		if (post.created_by == currentUser.id || currentUser.role == '管理员') {
+			const result = await post.update({deleted_at: new Date()})
+			return this.success(result)
+		} else {
+			return this.error('你没有权限更改该条文章!')
+		}
+
 	}
 
 	//GET /api/posts/recent_posts?user_id=?
@@ -110,6 +126,7 @@ class PostController extends Controller {
 				limit: 10,
 				order: [['updated_at', 'desc']],
 				include: [
+					{ model: this.ctx.model.User, as: 'user', attributes: ['name', 'avatar_url', 'id'] },
 					{ model: this.ctx.model.Category, as: 'category', attributes: ['name'] }
 				]
 			})

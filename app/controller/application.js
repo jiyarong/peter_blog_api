@@ -5,7 +5,7 @@ var md5 = require("md5")
 var moment = require("moment")
 
 class ApplicationController extends Controller {
-	success(data) {
+	success(data='') {
 		this.ctx.body = {
 			success: true,
 			data: data
@@ -57,7 +57,8 @@ class ApplicationController extends Controller {
 			token: session.token,
 			name: user.name,
 			avatar_url: user.avatar_url,
-			role: user.role
+			role: user.role,
+			id: user.id
 		}
 	}
 }
