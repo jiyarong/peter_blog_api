@@ -24,5 +24,5 @@ module.exports = app => {
   router.post('/api/users/update_avatar',validateUser(), controller.user.update_avatar);
   router.get('/api/users', validateUser(), validateUserAdmin(), controller.user.index);
   router.put('/api/users/:id', validateUser(), validateUserAdmin(), controller.user.update);
-  router.get('/api/users/get_validate_code', controller.user.get_validate_code)
+  router.get('/api/users/get_validate_code', controller.user.get_validate_code);
 };

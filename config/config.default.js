@@ -36,7 +36,11 @@ module.exports = appInfo => {
       'http://localhost:3000', 
       'http://admin.jikabao.dev1:3001', 
       'http://blog.peterji.cn',
-      'http://www.peterji.cn'
+      'http://www.peterji.cn',
+      'https://localhost:3000', 
+      'https://admin.jikabao.dev1:3001', 
+      'https://blog.peterji.cn',
+      'https://www.peterji.cn'
     ],
 
     csrf: {

@@ -5,7 +5,6 @@ const Controller = require('./application');
 class PostController extends Controller {
 	//GET /api/posts
 	async index() {
-		console.log('app.config.env', this.ctx.app.config.env)
 		const params = this.ctx.query
 		if (params.page == undefined) params.page = 1;
 		if (params.per_page == undefined) params.per_page = 20
@@ -26,8 +25,9 @@ class PostController extends Controller {
 			offset: params.per_page * (params.page - 1),
 			include: [
 				{ model: this.ctx.model.User, as: 'user', attributes: ['name', 'avatar_url', 'id'] },
-				{ model: this.ctx.model.Category, as: 'category', attributes: ['name'] }
-			],
+				{ model: this.ctx.model.Category, as: 'category', attributes: ['name'] },
+				{ model: this.ctx.model.Category, as: 'sub_category', attributes: ['name'] }
+ 			],
 			where: {
 				...tabQuery
 			}
@@ -96,7 +96,6 @@ class PostController extends Controller {
 
 	//DELETE /api/posts/:id
 	async destroy() {
-		console.log('it works')
 		const { params, currentUser, model } = this.ctx
 		let post = await model.Post.findById(params.id)
 		if (post == undefined) { return this.error('未找到该文章') }
@@ -123,11 +122,13 @@ class PostController extends Controller {
 
 		if (user != undefined) {
 			const posts = await user.getPosts({
+				scope: 'not_deleted',
 				limit: 10,
 				order: [['updated_at', 'desc']],
 				include: [
 					{ model: this.ctx.model.User, as: 'user', attributes: ['name', 'avatar_url', 'id'] },
-					{ model: this.ctx.model.Category, as: 'category', attributes: ['name'] }
+					{ model: this.ctx.model.Category, as: 'category', attributes: ['name'] },
+					{ model: this.ctx.model.Category, as: 'sub_category', attributes: ['name'] }
 				]
 			})
 			return this.success(posts)

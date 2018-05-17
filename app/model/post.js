@@ -21,6 +21,11 @@ module.exports = app => {
 	Post.associate = function () {
 		app.model.Post.belongsTo(app.model.User, { as: 'user' });
 		app.model.Post.belongsTo(app.model.Category, { as: 'category' });
+		app.model.Post.belongsTo(app.model.Category, { 
+			as: 'sub_category',
+			foreignKey: 'sub_category_id'
+		});
+
 		app.model.Post.hasMany(app.model.Comment, {
 			foreignKey: 'commentable_id',
 			constraints: false,
@@ -28,7 +33,7 @@ module.exports = app => {
 				commentable: 'post'
 			},
 			as: 'comments'
-		})
+		});
 	}
 
 	return Post;

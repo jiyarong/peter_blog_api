@@ -43,7 +43,8 @@
     "migrate:up": "egg-sequelize db:migrate",
     "migrate:down": "egg-sequelize db:migrate:undo",
     "seed:generate": "egg-sequelize seed:generate",
-    "seed:up": "egg-sequelize db:seed:all"
+    "seed:up": "egg-sequelize db:seed:all",
+    "seed:down": "egg-sequelize db:seed:undo:all"
   },
   "ci": {
     "version": "8"
